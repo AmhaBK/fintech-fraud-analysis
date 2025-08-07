@@ -1,0 +1,22 @@
+# Core libraries
+pandas
+numpy
+scipy
+scikit-learn
+joblib
+
+# Handling class imbalance
+imbalanced-learn
+
+# Visualization
+matplotlib
+seaborn
+
+# Gradient boosting
+xgboost
+
+# For logging and development
+tqdm
+
+# Optional: Jupyter for notebooks
+jupyterlab
