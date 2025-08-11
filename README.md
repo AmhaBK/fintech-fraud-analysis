@@ -1,73 +1,90 @@
-# Credit Risk Probability Model
+# Adey Innovations E-commerce Fraud Detection Project
 
-This project develops a machine learning-based probability model to detect fraudulent financial transactions using two datasets:
-1. **E-Commerce Fraud Dataset** (`fraud_dataset.csv`)
-2. **Credit Card Transactions Dataset** (`creditcard.csv`)
+This project focuses on building a robust fraud detection system for **Adey Innovations**, an e-commerce company.  
+The primary goal is to minimize financial losses from fraudulent transactions while maintaining a seamless user experience.  
 
-The project is part of a credit scoring challenge, with the goal of improving fraud detection through robust preprocessing, model training, and evaluation.
-
-
-### 1. Data Cleaning and Feature Engineering
-
-- Removed identifiers like `user_id`, `transaction_id`.
-- Encoded categorical columns (`device_type`, `browser`, `payment_method`, `entry_mode`) using label encoding.
-- Dropped highly correlated features to reduce multicollinearity.
-
-### 2. Handling Class Imbalance
-
-- Applied **SMOTE** on training data only (both datasets) to balance fraud (minority) and non-fraud (majority) transactions.
-- Ensured **no SMOTE was applied to test sets** to maintain realistic fraud ratios for evaluation.
-
-### 3. Train-Test Splitting
-
-- Used `train_test_split()` with `stratify` to preserve class distribution in both train and test sets.
-
-### 4. Scaling
-
-- Fitted `StandardScaler` only on the balanced training set.
-- Applied the same scaler to transform test data.
-
-### 5. Saving Artifacts
-
-Used `joblib` to save preprocessed datasets:
-- For e-commerce fraud:
-  - `X_train_bal.pkl`, `y_train_bal.pkl`
-  - `X_test.pkl`, `y_test.pkl`
-- For credit card fraud:
-  - `Xc_train_bal.pkl`, `yc_train_bal.pkl`
-  - `Xc_test.pkl`, `yc_test.pkl`
-
-##  Upcoming Steps
-
-- Train classification models: Logistic Regression, Random Forest, and XGBoost.
-- Compare model performance using:
-  - Accuracy
-  - Precision
-  - Recall
-  - F1 Score
-  - ROC AUC Score
-- Choose best model for fraud detection and deploy using a simple REST API.
+This repository contains the code and analysis for two distinct fraud detection tasks:  
+1. Using a provided e-commerce dataset.  
+2. Using an anonymized credit card dataset.
 
 
-## Notes & Best Practices
 
-- Test sets remain **imbalanced** to simulate real-world data.
-- SMOTE and scaling are only done **after splitting**, and **only on training data**.
-- Saved preprocessed files allow seamless continuation of the project after restarting.
+## 1. Project Structure
 
----
+The project is organized into the following directories:
 
-## Environment & Libraries
+- **data/**: Contains the raw and processed datasets.  
+  - **raw/**: The original `Fraud_Data.csv` and `IpAddress_to_Country.csv` files.  
+  - **processed/**: Intermediate data files generated after cleaning, feature engineering, and encoding, stored in formats like `.csv` and `.pkl`.  
 
-- Python 3.10+
-- pandas
-- scikit-learn
-- imbalanced-learn
-- joblib
-- xgboost
-- matplotlib, seaborn (for EDA)
+- **src/**: Contains custom Python modules for data preprocessing.  
+  - **preprocessing/**: Modules for data cleaning, feature engineering, and transformation.  
 
-Install dependencies with:
+- **notebooks/**: Jupyter notebooks detailing the full data analysis, model training, and evaluation pipelines for both datasets.  
 
-```bash
-pip install -r requirements.txt
+- **reports/**: Contains the final project report summarizing the findings and recommendations.
+
+
+
+## 2. E-commerce Fraud Detection
+
+### 2.1. Overview
+The primary dataset for this part of the project is `Fraud_Data.csv`.  
+It contains information on e-commerce transactions, including user details, device information, and transaction timestamps.  
+A separate `IpAddress_to_Country.csv` dataset was used to enrich the data with geographical information.
+
+### 2.2. Key Steps
+
+#### Data Preprocessing
+- Extracted time-based features like `hour_of_day`, `day_of_week`, and `time_since_signup` from the `purchase_time` and `signup_time` columns.  
+- Used the `ip_address` column to merge the data with `IpAddress_to_Country.csv` to add a **country** feature.  
+- One-hot encoded categorical features such as `source`, `browser`, `sex`, `country`, `day_of_week`, and `hour_of_day`.  
+- Scaled the processed data using a **StandardScaler**.
+
+#### Class Imbalance Handling
+- Original dataset had a significant imbalance:  
+  - **Non-fraudulent transactions (Class 0)**: 136,961  
+  - **Fraudulent transactions (Class 1)**: 14,151  
+- Applied **SMOTE (Synthetic Minority Over-sampling Technique)** to balance the training data.
+
+#### Model Training & Evaluation
+- Models trained: Logistic Regression, Random Forest, Gradient Boosting, and XGBoost.  
+- Evaluation metrics for imbalanced data: **AUC-PR**, **Precision**, and **Confusion Matrix**.  
+- **Gradient Boosting** was selected as the best model:  
+  - AUC-PR: **0.62**  
+  - Precision: ~**100%**  
+  - Only 6 false positives.
+
+#### Model Explainability
+- Used **SHAP (SHapley Additive exPlanations)** to identify influential features.  
+- Top predictors:  
+  1. `time_since_signup`  
+  2. `country_United States`  
+  3. `browser_Chrome`
+
+
+
+## 3. Credit Card Fraud Detection
+
+This task used a publicly available, anonymized credit card fraud dataset.  
+The main difference was that the features (`V1` to `V28`) were not human-readable.
+
+- Followed the same modeling pipeline as the e-commerce dataset.  
+- Performed SHAP analysis on the best-performing model.  
+- **V14** was found to be the most impactful feature for fraud detection.  
+  - Although its original meaning is unknown (due to PCA transformation), its importance shows the model’s ability to detect critical fraud patterns.
+
+
+
+## 4. Getting Started
+
+To run the project:
+
+1. **Clone** this repository.  
+2. **Install** required libraries:  
+   ```bash
+   pip install pandas numpy scikit-learn xgboost shap imblearn
+
+3. Ensure your data files are in the data/raw/ directory.
+
+4. Run the notebooks in notebooks/ in the specified order to reproduce the analysis and results.
