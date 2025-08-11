@@ -1,4 +1,4 @@
-# Adey Innovations E-commerce Fraud Detection Project
+# E-commerce Fraud Detection Project
 
 This project focuses on building a robust fraud detection system for **Adey Innovations**, an e-commerce company.  
 The primary goal is to minimize financial losses from fraudulent transactions while maintaining a seamless user experience.  
